@@ -1,0 +1,160 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			main {
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 2em 1em;
+			}
+			.hero-image {
+				width: 100%;
+				margin-bottom: 2rem;
+			}
+			.hero-image img {
+				display: block;
+				width: 100%;
+				height: auto;
+				max-height: 480px;
+				object-fit: cover;
+				border-radius: 16px;
+				box-shadow: var(--shadow-lg);
+			}
+			.prose {
+				color: var(--text-primary);
+				font-size: 1.1rem;
+				line-height: 1.8;
+			}
+			.title {
+				margin-bottom: 2em;
+				text-align: center;
+			}
+			.title h1 {
+				margin: 0.5em 0;
+				font-size: 2.5rem;
+				font-weight: 800;
+				background: linear-gradient(135deg, var(--text-primary), var(--accent));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+			.date {
+				margin-bottom: 1em;
+				color: var(--text-tertiary);
+				font-size: 0.95rem;
+				display: flex;
+				justify-content: center;
+				gap: 1rem;
+				align-items: center;
+			}
+			.last-updated-on {
+				font-style: italic;
+			}
+			
+			/* Reading Progress Bar */
+			.progress-container {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 4px;
+				background: transparent;
+				z-index: 1000;
+			}
+			.progress-bar {
+				height: 100%;
+				background: var(--accent);
+				width: 0%;
+				transition: width 0.1s;
+			}
+
+			/* Markdown Content Styling */
+			:global(.prose h2) {
+				margin-top: 2em;
+				margin-bottom: 1em;
+				font-size: 1.8rem;
+				color: var(--text-primary);
+			}
+			:global(.prose h3) {
+				margin-top: 1.5em;
+				margin-bottom: 0.8em;
+				font-size: 1.4rem;
+			}
+			:global(.prose p) {
+				margin-bottom: 1.5em;
+			}
+			:global(.prose a) {
+				color: var(--accent);
+				text-decoration: underline;
+				text-underline-offset: 4px;
+			}
+			:global(.prose li) {
+				margin-bottom: 0.5em;
+			}
+			:global(.prose code:not(pre code)) {
+				font-size: 0.9em;
+				padding: 0.2rem 0.4rem;
+			}
+			:global(.prose pre) {
+				margin: 2em 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="progress-container">
+			<div class="progress-bar" id="myBar"></div>
+		</div>
+		<Header />
+		<main class="fade-in">
+			<article>
+				{heroImage && (
+					<div class="hero-image">
+						<Image width={1020} height={510} src={heroImage} alt="" />
+					</div>
+				)}
+				<div class="prose">
+					<div class="title">
+						<div class="date">
+							<span><FormattedDate date={pubDate} /></span>
+							{updatedDate && (
+								<React.Fragment>
+									<span>•</span>
+									<span class="last-updated-on">
+										Updated: <FormattedDate date={updatedDate} />
+									</span>
+								</React.Fragment>
+							)}
+						</div>
+						<h1>{title}</h1>
+						<hr />
+					</div>
+					<slot />
+				</div>
+			</article>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			// Reading Progress Bar
+			window.onscroll = function() {
+				const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+				const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+				const scrolled = (winScroll / height) * 100;
+				document.getElementById("myBar").style.width = scrolled + "%";
+			};
+		</script>
+	</body>
+</html>

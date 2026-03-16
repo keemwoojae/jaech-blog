@@ -1,0 +1,115 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).slice(0, 3); // Get only the 3 most recent posts
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			.hero {
+				padding: 4rem 0;
+				text-align: center;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 1.5rem;
+			}
+			
+			.hero h1 {
+				font-size: 3.5rem;
+				font-weight: 800;
+				margin: 0;
+				line-height: 1.2;
+				background: linear-gradient(135deg, var(--text-primary), var(--accent));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+			
+			.hero p {
+				font-size: 1.25rem;
+				color: var(--text-secondary);
+				max-width: 600px;
+				margin: 0;
+			}
+
+			.recent-posts {
+				margin-top: 4rem;
+			}
+
+			.section-title {
+				font-size: 2rem;
+				font-weight: 700;
+				margin-bottom: 2rem;
+				color: var(--text-primary);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			
+			.view-all {
+				font-size: 1rem;
+				font-weight: 500;
+				color: var(--accent);
+				text-decoration: none;
+				transition: color 0.2s;
+			}
+			
+			.view-all:hover {
+				color: var(--accent-hover);
+				text-decoration: underline;
+			}
+
+			.post-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 2rem;
+			}
+
+			@media (max-width: 768px) {
+				.hero h1 {
+					font-size: 2.5rem;
+				}
+				.hero p {
+					font-size: 1.1rem;
+				}
+				.post-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main class="fade-in">
+			<section class="hero">
+				<h1>Exploring Data & Graphs</h1>
+				<p>
+					Hi, I'm Woojae. I'm an undergraduate studying Systems Management Engineering (Industrial Engineering) at Sungkyunkwan University, sharing my learnings about Graph Neural Networks, Data Analytics, and Software Engineering.
+				</p>
+			</section>
+
+			<section class="recent-posts">
+				<div class="section-title">
+					<h2>Recent Posts</h2>
+					<a href="/blog" class="view-all">View all posts →</a>
+				</div>
+				<div class="post-grid">
+					{posts.map((post) => (
+						<PostCard post={post} />
+					))}
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

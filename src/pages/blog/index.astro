@@ -1,0 +1,114 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 3rem 1rem;
+			}
+			
+			.page-header {
+				margin-bottom: 3rem;
+				text-align: center;
+			}
+
+			.page-header h1 {
+				font-size: 3rem;
+				font-weight: 800;
+				margin: 0 0 0.5rem 0;
+				background: linear-gradient(135deg, var(--text-primary), var(--accent));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+
+			.page-header p {
+				color: var(--text-secondary);
+				font-size: 1.1rem;
+				margin: 0;
+			}
+			
+			.post-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+				gap: 2.5rem;
+			}
+			
+			/* First post featured layout */
+			.post-grid > :first-child {
+				grid-column: 1 / -1;
+				display: flex;
+				flex-direction: column;
+			}
+			
+			@media (min-width: 768px) {
+				.post-grid > :first-child :global(article) {
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					gap: 2rem;
+					align-items: center;
+				}
+				
+				.post-grid > :first-child :global(.image-wrapper) {
+					height: 100%;
+					min-height: 300px;
+					border-radius: 12px 0 0 12px;
+				}
+				
+				.post-grid > :first-child :global(.title) {
+					font-size: 2rem;
+					margin-bottom: 1rem;
+				}
+				
+				.post-grid > :first-child :global(.description) {
+					font-size: 1.1rem;
+					-webkit-line-clamp: 4;
+				}
+			}
+
+			@media (max-width: 600px) {
+				.page-header h1 {
+					font-size: 2.2rem;
+				}
+				.post-grid {
+					grid-template-columns: 1fr;
+					gap: 1.5rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main class="fade-in">
+			<section class="page-header">
+				<h1>All Posts</h1>
+				<p>Everything I've written so far, ordered by date.</p>
+			</section>
+			
+			<section>
+				<div class="post-grid">
+					{
+						posts.map((post) => (
+							<PostCard post={post} />
+						))
+					}
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
